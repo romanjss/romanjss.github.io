@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Vue JS 01</title>
+
+    <style type="text/css">
+        
+        .tdd {
+         width: 32px;
+         height: 32px;
+         border: 1px solid black; /* Рамка вокруг таблицы */
+
+        }
+
+        .tdd2 {
+         width: 16px;
+         height: 16px;
+         padding: -1px;
+
+        }
+       </style>
+
+</head>
+<body>
+    <div id = "root">
+
+        <h1>Рисовалка!</h1>
+        <table @click="Select_color($event)">
+            <td id="select_white" class="tdd" style="background-color: white"></td>
+            <td id="select_green" class="tdd" style="background-color: green" ></td>
+            <td id="select_red" class="tdd" style="background-color: red"></td>
+            <td id="select_yellow" class="tdd" style="background-color: yellow"></td>
+            <td id="select_orange" class="tdd" style="background-color: orange"></td>
+            <td id="select_blue" class="tdd" style="background-color: blue"></td>
+            <td id="select_purple" class="tdd" style="background-color: purple"></td>
+            <td id="select_black" class="tdd" style="background-color: black"></td>
+            <td id="select_greenyellow" class="tdd" style="background-color: greenyellow"></td>
+        </table>
+
+        <h2>Тукущий цвет: {{ current_color }}</h2>
+
+        <div id="tbl" @click="Paint_color($event)" style="display: inline-block; margin: auto;"></div>
+        
+        
+
+        
+
+        
+
+
+    </div>
+    
+
+    <script src="./vue.js"></script>
+
+    <script>
+        new Vue({
+            el: "#root",
+            data:{
+                current_color: "green"
+            },
+            methods: {
+                Select_color: function (event) {
+                    var a = event.target.id;
+                   
+                    if (a.split("_")[0] === "select")
+                    {
+                        
+                        this.current_color =  a.split("_")[1];
+                    }
+                    
+                },
+
+                Paint_color: function (event) {
+
+                    if (event.target.tagName == "TD")
+                    {
+                        event.target.style.backgroundColor = this.current_color;
+                    }
+                    
+                   
+                }
+            }
+        })
+    
+    </script>
+
+    <script>
+        
+
+        function Create_table()
+        {
+            var H = 16;
+            var W = 16;
+            var table_sample = '<table style = "border: 1px solid black; border-spacing: 0px 0px;">'
+            var td_sample = '<td class="tdd2"></td>'
+
+            var str = table_sample;
+
+            //str += "<tbody>";
+            for (var i = 0; i < H; i++)
+            {
+                str += "<tr>";
+                for (var i2 = 0; i2 < W; i2++)
+                {
+                    str += td_sample;
+                }
+                str += "</tr>";
+            }
+           // str += "</tbody>";
+            str += "</table>";
+            
+            document.getElementById("tbl").innerHTML = str;
+        }
+
+        Create_table();
+    </script>
+    
+</body>
+</html>
