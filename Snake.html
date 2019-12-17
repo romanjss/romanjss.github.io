@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <title>Snake</title>
+    <style>body {padding-left: 20px;}</style>
+</head>
+<body bgcolor="PapayaWhip">
+<p>ЗМЕЙКА (управление стрелками или кнопками WASD) by Gerombo</p>
+<canvas id="snake" width="800" height="600"></canvas>
+ 
+<script type="application/javascript">
+ 
+    var snake=document.getElementById("snake"), //id convas
+        ctx=snake.getContext("2d"),
+        xS=snake.width, yS=snake.height, // Берем из convas значение ширины и высоты
+        qS=25, //Размер элемента змейки
+        xZ=xS/2-qS, yZ=yS/2-qS, //Координаты позиции змейки, со стартовой позицией
+        vK, xK=0, yK=0, //Направление (вектор) движения змейки
+        xZarr=[], yZarr=[], //Массивы координат змейки
+        xF, yF, //Координаты позиции фрукта
+        rS=0; //Счетчик, т.е. число съеденных фруктов
+    
+    fruit(); //Вызываем функцию для расчета случайной стартовой позиции фрукта
+    
+    //Функция случайного выбора координат для фрукта
+    function fruit() {
+        xF=Math.round((xS/qS-1)*Math.random())*qS;
+        yF=Math.round((yS/qS-1)*Math.random())*qS;
+        for (var i=0; i<=(rS); i++) if (xZarr[i]==xF && yZarr[i]==yF) fruit(); //Повторный рандом при наложении на змейку
+    };
+    
+    //Функция обнуления змейки при столкновении с хвостом
+    function feil() {
+        ctx.fillStyle="White"; //Вспышка при столкновении
+        ctx.fillRect(0, 0, xS, yS);
+        xZarr.length=1; //Стираем X-массив змейки до 1 элемента
+        yZarr.length=1; //Стираем Y-массив змейки до 1 элемента
+        rS=0; //Обнуляем счетчик
+    };
+    
+    //Отслеживаем нажатие клавиш в потоке событий
+    onkeydown=function(event) {
+        event.preventDefault(); //Отменяются исполнения браузером событий event, что-бы не срабатывал скролл(прокрутка) страниц, при нажатии стрелок
+        switch(event.keyCode) {
+            case 38: case 87: if (vK!=1) {xK=0; yK=-1; vK=1}; break; //Вверх
+            case 39: case 68: if (vK!=2) {xK=1; yK=0; vK=2}; break; //Вправо
+            case 40: case 83: if (vK!=1) {xK=0; yK=1; vK=1}; break; //Вниз
+            case 37: case 65: if (vK!=2) {xK=-1; yK=0; vK=2}; break; //Влево
+        }
+    };
+    
+    //Функция отрисовки кадра через интервал времени
+    setInterval(function() {
+        
+        //Фон и размер игрового поля
+        ctx.fillStyle="SpringGreen";
+        ctx.fillRect(0, 0, xS, yS);
+        
+        //Тень
+        ctx.shadowBlur=10;
+        ctx.shadowColor="MidnightBlue";
+        
+        //Цвет и позиция фрукта
+        ctx.beginPath();
+        ctx.arc(xF+qS/2, yF+qS/2, qS/1.6, qS/1.6, Math.PI*1, true); //Разметка оружности
+        ctx.fillStyle="Red"; //Цвет круга
+        ctx.fill();
+        ctx.strokeStyle="Lime"; //Цвет линии окружности
+        ctx.stroke();
+        
+        //Рассчитываем координату при движении и телепортируем при выходе за края
+        xZ=xZ+xK*qS;
+        if (xZ>=xS) xZ=0;
+        if (xZ<0) xZ=xS-qS;
+        yZ=yZ+yK*qS;
+        if (yZ>=yS) yZ=0;
+        if (yZ<0) yZ=yS-qS;
+        
+        //Проверка на столкновение
+        for (var i=0; i<=(rS); i++) if (xZarr[i]==xZ && yZarr[i]==yZ) feil();
+        
+        //Заменяем координаты в начальных элементах массива
+        xZarr.unshift(xZ);
+        yZarr.unshift(yZ);
+        
+        //Цвет и цикл вывода массива элементов змейки с отрисовкой
+        ctx.fillStyle="Blue";
+        for (var i=0; i<=(rS); i++) ctx.fillRect(xZarr[i]+1, yZarr[i]+1, qS-2, qS-2); //Отрисовка массива змейки
+        
+        //Кушаем фрукт, при совпадении координат головы змеи и фрукта - выводим новый фрукт и счетчик +1
+        if (xF==xZ && yF==yZ) {
+            fruit();
+            rS++;
+        } else { //Иначе - стираем хвост, т.е. змейка перемещается без прироста
+            xZarr.pop();
+            yZarr.pop();
+        }
+        
+        //Выводим счетчик съеденных фруктов
+        ctx.fillStyle="Black"; //Цвет шрифта счетчика
+        ctx.font="bold 13pt Arial"; //Стиль, размер и шрифт
+        ctx.textBaseline="middle"; //Расположение по вертикали
+        ctx.textAlign="center"; //Расположение по горизонтали
+        ctx.fillText(rS+1, xF+qS/2, yF+qS/2); //Расположение счетчика (привязка к фрукту)
+        
+    }, 1000/8); //Пауза (кадров в секунду)
+    
+</script>
+</body>
+</html>
